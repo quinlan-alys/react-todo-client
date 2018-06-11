@@ -10,16 +10,34 @@ class App extends Component {
         }
 
         this.inputChange = this.inputChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount() {
-        fetch('/index')
+        fetch('/tasks')
             .then(res => res.json())
             .then(items => {
                 this.setState({ items })
             });
     }
 
+    handleSubmit() {
+      var params = { name: this.state.input };
+      fetch('/tasks', {
+              method: 'POST',
+              body: JSON.stringify(params),
+
+              headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+              }
+          })
+          .then(response => response.json())
+          .then(response => {
+              this.setState({ items: response,
+              input: '' })
+          })
+  }
 
     inputChange(event) {
         this.setState({ input: event.target.value });
@@ -37,7 +55,8 @@ class App extends Component {
                 placeholder = "Enter your task" />
                 <br/>
             <input type = "submit"
-                value = "Submit" />  
+                value = "Submit"
+                onClick = { this.handleSubmit }/>   />  
             <ul> 
             {
             this.state.items.map(item =>
@@ -47,8 +66,6 @@ class App extends Component {
         </div>
         );
     }
-
-
 }
 
 export default App;
